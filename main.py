@@ -1,8 +1,10 @@
 import os
+from re import I
 from PyQt5 import QtWidgets, QtCore, QtGui
 import qrcode
 from PIL import Image
 from utils.callapi import CallApi
+import uuid
 
 
 class Image(qrcode.image.base.BaseImage):
@@ -46,23 +48,69 @@ class Window(QtWidgets.QWidget):
         self.edit = QtWidgets.QLineEdit(self)
         # self.edit.returnPressed.connect(self.handleTextEntered)
 
+        self.editTimer = QtWidgets.QLabel(self)
+
+        # QTimer
+
         self.button = QtWidgets.QPushButton('Pay QR', self)
         # self.button.setToolTip('This is an example button')
         self.button.move(100, 70)
         self.button.clicked.connect(self.button_clicked)
 
+        # Other
+        self.timer = QtCore.QTimer()
+        self.timer.timeout.connect(self.LCDEvent)
+        self.s = 59
+
+        self.requestId = 0
+
         layout = QtWidgets.QVBoxLayout(self)
         layout.addWidget(self.label)
         layout.addWidget(self.edit)
         layout.addWidget(self.button)
+        layout.addWidget(self.editTimer)
+
+    def timeGo(self):
+        print("timeGo")
+        self.timer.start(1000)
+
+    def timeStop(self):
+        print("timeStop")
+        self.timer.stop()
+
+    def LCDEvent(self):
+
+        # print("LCDEvent")
+        self.s -= 1
+        # self.editTimer.text()
+        self.editTimer.setText(str(self.s))
+        if self.s == 0:
+            self.timeStop()
+            # clearing the data
+            self.label.clear()
+            self.label.setText('Payment Expired.')
+        else:
+            # Call reques
+            confirm = CallApi(self.requestId).get_confirm_status()
+            if confirm == True:
+                self.timeStop()
+                self.editTimer.setText('0')
+                self.label.clear()
+                self.label.setText('Payment Sucesss.')
 
     def button_clicked(self):
+        self.requestId = uuid.uuid4()
+        self.label.clear()
         print("clicked")
+        self.s = 59
+        self.editTimer.setText(str(self.s))
+        self.timeGo()
+        # self.timer.start(1000)
 
         txtAmount = self.edit.text()  # text = unicode(self.edit.text())
         print(f"{txtAmount}")
         # Call reques
-        payment = CallApi()
+        payment = CallApi(self.requestId)
 
         qrRowData = payment.run(txtAmount)
 
