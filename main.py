@@ -60,7 +60,7 @@ class Window(QtWidgets.QWidget):
         # Other
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.LCDEvent)
-        self.s = 59
+        self.s = 179
 
         self.requestId = 0
 
@@ -79,7 +79,7 @@ class Window(QtWidgets.QWidget):
         self.timer.stop()
 
     def LCDEvent(self):
-
+    
         # print("LCDEvent")
         self.s -= 1
         # self.editTimer.text()
@@ -102,12 +102,18 @@ class Window(QtWidgets.QWidget):
         self.requestId = uuid.uuid4()
         self.label.clear()
         print("clicked")
-        self.s = 59
+        self.s = 179
         self.editTimer.setText(str(self.s))
         self.timeGo()
         # self.timer.start(1000)
 
-        txtAmount = self.edit.text()  # text = unicode(self.edit.text())
+        # txtAmount = self.edit.text()  # text = unicode(self.edit.text()) 
+        # change txnAmount * 100 
+        # ---------------------------------
+        # _________________________________
+        int_Amount = int(self.edit.text()) * 100
+        txtAmount = str(int_Amount)
+        
         print(f"{txtAmount}")
         # Call reques
         payment = CallApi(self.requestId)

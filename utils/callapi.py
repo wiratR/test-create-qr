@@ -12,7 +12,7 @@ class CallApi:
     """
 
     def __init__(self, reuestId):
-        self.urls = "http://58.9.110.21:29925/api/payment/" + str(reuestId)
+        self.urls = "http://58.9.110.21:50247/api/payment/" + str(reuestId)
         self.headers = {
             "Accept": "*/*",
             "Content-Type": "application/json"
@@ -29,7 +29,7 @@ class CallApi:
             print(f"response status code : {response.status_code}")
             if response.status_code == 200 or response.status_code == 201:
                 # print(f"response : {response.json()}")
-                # print(f"response : {response.json().get('request_status_id')}")
+                print(f"response : {response.json().get('request_status_id')}")
                 # print(f"response qrdata : {response.json().get('qrRawData')}")
                 # return response.json().get('qrRawData')
                 if response.json().get('request_status_id') == 1:
